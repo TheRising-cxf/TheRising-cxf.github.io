@@ -24,6 +24,9 @@
         let alpha = 0;
         let beta = 0;
         let gamma = 0;
+        let accelerationX = 0;
+        let accelerationY = 0;
+        let accelerationZ = 0;
 
         const createScene = () => {
             const scene = new BABYLON.Scene(engine);
@@ -50,6 +53,11 @@
             beta = event.beta || 0;
             gamma = event.gamma || 0;
         };
+        function handleDeviceMotion(event) {
+             accelerationX = event.accelerationIncludingGravity.x || 0;
+             accelerationY = event.accelerationIncludingGravity.y || 0;
+             accelerationZ = event.accelerationIncludingGravity.z || 0;
+        }
 
         if ('DeviceOrientationEvent' in window) {
             window.addEventListener('deviceorientation', handleDeviceOrientation);
@@ -62,18 +70,15 @@
             if (deviceOrientationSupported) {
                 const box = scene.getMeshByID("box");
                 if (box) {
+                    console.log(accelerationX,accelerationY,accelerationZ)
                     // 使用设备方向信息和陀螺仪信息来控制盒子的旋转和移动
-                    box.rotation.x = -gamma * Math.PI / 180;
-                    box.rotation.y = -alpha * Math.PI / 180;
-                    box.rotation.z = beta * Math.PI / 180;
+                    box.rotation.x = -beta * Math.PI / 180;
+                    box.rotation.y = -gamma * Math.PI / 180;
+                    box.rotation.z = alpha * Math.PI / 180;
 
-                    const rotationRateX = window.gyroscope?.x || 0; // 陀螺仪的 x 轴角速度
-                    const rotationRateY = window.gyroscope?.y || 0; // 陀螺仪的 y 轴角速度
-                    const rotationRateZ = window.gyroscope?.z || 0; // 陀螺仪的 z 轴角速度
-
-                    box.position.x += rotationRateY; // 根据陀螺仪角速度移动盒子
-                    box.position.y += rotationRateX; // 根据陀螺仪角速度移动盒子
-                    box.position.z += rotationRateZ; // 根据陀螺仪角速度移动盒子
+                    box.position.x += accelerationX; // 根据陀螺仪角速度移动盒子
+                    box.position.y += accelerationY; // 根据陀螺仪角速度移动盒子
+                    box.position.z += accelerationZ; // 根据陀螺仪角速度移动盒子
                 }
             }
 
