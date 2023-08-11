@@ -1,35 +1,70 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>h5陀螺仪原理</title>
+    <title>Babylon.js Sensor Example</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+        #renderCanvas {
+            width: 100%;
+            height: 100vh;
+        }
+    </style>
 </head>
 <body>
-    alpha:<span id="alpha"></span><br/>
-    beta:<span id="beta"></span><br/>
-    gamma:<span id="gamma"></span><br/>
-   
+    <canvas id="renderCanvas"></canvas>
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+    <script>
+        const canvas = document.getElementById("renderCanvas");
+        const engine = new BABYLON.Engine(canvas, true);
+
+        const createScene = () => {
+            const scene = new BABYLON.Scene(engine);
+
+            // 创建相机
+            const camera = new BABYLON.FreeCamera("camera", new BABYLON.Vector3(0, 1, -5), scene);
+            camera.setTarget(BABYLON.Vector3.Zero());
+            camera.attachControl(canvas, true);
+
+            // 创建一个盒子
+            const box = BABYLON.MeshBuilder.CreateBox("box", { size: 1 }, scene);
+
+            // 设置场景光照
+            const light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
+            light.intensity = 0.7;
+
+            // 获取设备方向传感器信息
+            if ('DeviceOrientationEvent' in window) {
+                window.addEventListener('deviceorientation', (event) => {
+                    // 使用 event.alpha、event.beta 和 event.gamma
+                    const alpha = event.alpha || 0;
+                    const beta = event.beta || 0;
+                    const gamma = event.gamma || 0;
+
+                    // 应用设备方向信息到场景中的物体
+                    box.rotation.x = beta * Math.PI / 180;
+                    box.rotation.y = alpha * Math.PI / 180;
+                    box.rotation.z = -gamma * Math.PI / 180;
+                });
+            } else {
+                console.log('DeviceOrientationEvent is not supported.');
+            }
+
+            return scene;
+        };
+
+        const scene = createScene();
+
+        engine.runRenderLoop(() => {
+            scene.render();
+        });
+
+        window.addEventListener('resize', () => {
+            engine.resize();
+        });
+    </script>
 </body>
-<script>
-    if (window.DeviceOrientationEvent) {
-        window.addEventListener('deviceorientation', function (event) {  
-            var a = document.getElementById('alpha'),
-                b = document.getElementById('beta'),
-                g = document.getElementById('gamma'),
-                alpha = event.alpha,
-                beta = event.beta,
-                gamma = event.gamma;
-                
-            a.innerHTML = Math.round(alpha); // 水平旋转
-            b.innerHTML = Math.round(beta);// 前后反转
-            g.innerHTML = Math.round(gamma);// 左右翻转
- 
-        }, false);
-    } else {
-        document.querySelector('body').innerHTML = '你的浏览器不支持陀螺仪';
-    }
-</script>
 </html>
