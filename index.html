@@ -63,17 +63,17 @@
                 const box = scene.getMeshByID("box");
                 if (box) {
                     // 使用设备方向信息和陀螺仪信息来控制盒子的旋转和移动
-                    box.rotation.x = beta * Math.PI / 180;
-                    box.rotation.y = alpha * Math.PI / 180;
-                    box.rotation.z = -gamma * Math.PI / 180;
+                    box.rotation.x = -gamma * Math.PI / 180;
+                    box.rotation.y = -alpha * Math.PI / 180;
+                    box.rotation.z = beta * Math.PI / 180;
 
                     const rotationRateX = window.gyroscope?.x || 0; // 陀螺仪的 x 轴角速度
                     const rotationRateY = window.gyroscope?.y || 0; // 陀螺仪的 y 轴角速度
                     const rotationRateZ = window.gyroscope?.z || 0; // 陀螺仪的 z 轴角速度
 
-                    box.position.x += rotationRateY * 0.01; // 根据陀螺仪角速度移动盒子
-                    box.position.y += rotationRateX * 0.01; // 根据陀螺仪角速度移动盒子
-                    box.position.z += rotationRateZ * 0.01; // 根据陀螺仪角速度移动盒子
+                    box.position.x += rotationRateY; // 根据陀螺仪角速度移动盒子
+                    box.position.y += rotationRateX; // 根据陀螺仪角速度移动盒子
+                    box.position.z += rotationRateZ; // 根据陀螺仪角速度移动盒子
                 }
             }
 
